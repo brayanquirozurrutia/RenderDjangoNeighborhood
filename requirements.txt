@@ -27,7 +27,7 @@ python-http-client==3.3.7
 pytz==2023.3.post1
 requests==2.31.0
 sendgrid==6.10.0
-shiboken6==6.2.4
+shiboken6==6.4.0.1
 sqlparse==0.4.4
 starkbank-ecdsa==2.2.0
 typing_extensions==4.7.1
