@@ -1,0 +1,116 @@
+*{
+    box-sizing: border-box;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: black;
+}
+
+.body{
+    margin: 0;
+    background-color: #ecfff3;
+    background: linear-gradient(#ecfff3, #bcccc2);
+}
+
+.nav_{
+    background-color: #9dc08b;
+}
+
+.a_nav{
+    border-radius: 20px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    margin: 2px;
+}
+
+.boton_login{
+    color: black;
+}
+
+.boton_logout{
+    background-color: #3C6255;
+    color: white;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.div_secciones{
+    background-color: #f2f3f5;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    border: 2px inset rgba(60, 98, 85, 0.5);
+}
+
+
+.div_formulario{
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    background-color: #ced4db;
+    border: 2px inset rgba(60, 98, 85, 0.5);
+}
+
+.botones_cuenta{
+    background-color: #9dc08b;
+    color: black;
+}
+
+.section_footer{
+    background-color: #9DC08B;
+}
+
+.footer_{
+    background-color: #e6ddc1;
+    box-shadow: 0 0 1.5rem;
+}
+
+.a_nav:hover{
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    background-color: #3C6255;
+    color: white;
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+}
+
+.botones_cuenta:hover{
+    background-color: #3C6255;
+    color: white;
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+}
+
+.boton_login:hover{
+    background-color: #3C6255;
+    color: white;
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.boton_logout:hover{
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+}
+
+.input_ca:focus{
+    box-shadow: 0 0 0px 6px rgba(157, 192, 139, 0.8);
+    border-color: rgba(157, 192, 139, 0.8);
+}
+
+.corazon_footer:hover{
+    color: red;
+}
+
+.icono_footer:hover{
+    color: purple;
+}
+
+.icono_footer_github:hover{
+    font-size: 1.8rem;
+    color: purple;
+}
+
+.texto_footer:hover{
+    color: purple;
+    font-size: 1.1rem;
+}

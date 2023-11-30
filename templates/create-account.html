@@ -1,0 +1,357 @@
+{% load static %}
+
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <!-- Cargamos Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <!-- Cargamos MDBootstrap -->
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.0.0/mdb.min.css" rel="stylesheet" />
+    <!-- Ponemos CSS debajo de Bootstrap -->
+    <link rel="stylesheet" href="{% static 'css/create_account_.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/neighborhood_icon.png' %}">
+
+</head>
+
+<body class="body">
+    <header>
+        <!-- Navbar -->
+        <nav data-mdb-navbar-init class="navbar navbar-expand-lg navbar-light nav_">
+            <!-- Container wrapper -->
+            <div class="container">
+                <!-- Navbar brand -->
+                <a class="navbar-brand me-2" href="{% url 'index' %}">
+                    <img src="{% static 'images/neighborhood_icon.png' %}" alt="Neighborhood Logo" loading="lazy"
+                        width="60" />
+                </a>
+
+                <!-- Toggle button -->
+                <button data-mdb-collapse-init class="navbar-toggler" type="button"
+                    data-mdb-target="#navbarButtonsExample" aria-controls="navbarButtonsExample" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <!-- Collapsible wrapper -->
+                <div class="collapse navbar-collapse" id="navbarButtonsExample">
+                    <!-- Left links -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link a_nav" href="#">Tendencias</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link a_nav" href="#">Ciclovías</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link a_nav" href="#">Parques</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link a_nav" href="#">Museos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link a_nav" href="#">Quiénes somos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link a_nav" href="#">Dónde estamos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link a_nav" href="#">Noticias</a>
+                        </li>
+                    </ul>
+                    <!-- Left links -->
+
+                    <div class="d-flex align-items-center">
+                        <a data-mdb-ripple-init type="button" class="fw-bold rounded-pill px-3 me-2 boton_login"
+                            href="{% url 'login' %}">
+                            Entrar
+                        </a>
+                        <a data-mdb-ripple-init type="button" class="fw-bold rounded-pill boton_logout me-3 px-3"
+                            href="{% url 'create_account' %}">
+                            Crear cuenta
+                        </a>
+                    </div>
+                </div>
+                <!-- Collapsible wrapper -->
+            </div>
+            <!-- Container wrapper -->
+        </nav>
+    </header>
+    <main class="p-4">
+        <div class="container-fluid">
+            <div class="row pb-4 text-center">
+                <div class="col-12">
+                    <div class="div_secciones py-2">
+                        <h1>Neighborhood</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="div_secciones py-4">
+                        <div class="div_formulario w-50 py-5">
+                            <form method="post" class="px-4" enctype="multipart/form-data">
+
+                                {% csrf_token %}
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            {{Form.nombre_usuario}}
+                                            <label for="{{Form.nombre_usuario.id_for_label}}">Nombre</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            {{Form.apellido_usuario}}
+                                            <label for="{{Form.apellido_usuario.id_for_label}}">Apellido</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            {{Form.rut_usuario}}
+                                            <label for="{{Form.rut_usuario.id_for_label}}">RUT</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% if Form.rut_usuario.errors %}
+                                    <div class="alert alert-danger p-1">
+                                        {{ Form.rut_usuario.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            {{Form.correo_usuario}}
+                                            <label for="{{Form.correo_usuario.id_for_label}}">Correo</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            {{Form.reingrese_correo}}
+                                            <label for="{{Form.reingrese_correo.id_for_label}}">Reingrese correo</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% if Form.correo_usuario.errors %}
+                                    <div class="alert alert-danger p-1">
+                                        {{ Form.correo_usuario.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            {{Form.direccion_usuario}}
+                                            <label for="{{Form.direccion_usuario.id_for_label}}">Dirección</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            {{Form.telefono_usuario}}
+                                            <label for="{{Form.telefono_usuario.id_for_label}}">Teléfono</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% if Form.telefono_usuario.errors %}
+                                    <div class="alert alert-danger p-1">
+                                        {{ Form.telefono_usuario.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            {{Form.contrasenia_usuario}}
+                                            <label for="{{Form.contrasenia_usuario.id_for_label}}">Contraseña</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            {{Form.reingrese_contrasenia}}
+                                            <label for="{{Form.reingrese_contrasenia.id_for_label}}">Reingrese
+                                                contraseña</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% if Form.contrasenia_usuario.errors %}
+                                    <div class="alert alert-danger p-1">
+                                        {{ Form.contrasenia_usuario.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            {{Form.genero}}
+                                            <label for="{{Form.genero.id_for_label}}">Tratamiento</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <div class="mx-2">
+                                                <label for="{{Form.foto_de_perfil.id_for_label}}">Foto de perfil</label>
+                                            </div>
+                                            {{Form.foto_de_perfil}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 text-center">
+                                        <input type="submit" value="Crear cuenta"
+                                            class="btn w-100 fw-bold rounded-pill botones_cuenta">
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <a href="{% url 'index' %}"
+                                            class="btn w-100 fw-bold rounded-pill botones_cuenta">
+                                            Atrás
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+  <footer class="text-center text-lg-start text-muted mt-1 footer_ mt-4">
+    <!-- Section: Social media -->
+    <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom section_footer">
+      <!-- Left -->
+      <div class="me-5 d-none d-lg-block">
+        <span>Mantente conectado con nosotros por redes sociales:</span>
+      </div>
+      <!-- Left -->
+
+      <!-- Right -->
+      <div>
+        <a href="" class="me-4 text-reset text-decoration-none">
+          <i class="fa-brands fa-facebook icono_footer"></i>
+        </a>
+        <a href="" class="me-4 text-reset text-decoration-none">
+          <i class="fab fa-twitter icono_footer"></i>
+        </a>
+        <a href="" class="me-4 text-reset text-decoration-none">
+          <i class="fab fa-google icono_footer"></i>
+        </a>
+        <a href="" class="me-4 text-reset text-decoration-none">
+          <i class="fab fa-instagram icono_footer"></i>
+        </a>
+        <a href="" class="me-4 text-reset text-decoration-none">
+          <i class="fab fa-linkedin icono_footer"></i>
+        </a>
+        <a href="https://github.com/brayanquirozurrutia" class="me-4 text-reset text-decoration-none" target="_blank">
+          <i class="fab fa-github icono_footer_github fa-beat"></i>
+        </a>
+      </div>
+      <!-- Right -->
+    </section>
+    <!-- Section: Social media -->
+
+    <!-- Section: Links  -->
+    <section class="">
+      <div class="container text-center text-md-start mt-5">
+        <!-- Grid row -->
+        <div class="row mt-3">
+          <!-- Grid column -->
+          <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+            <img src="{% static 'images/neighborhood_icon.svg' %}" alt="Logo Neighborhood" width="80">
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+            <!-- Links -->
+            <h6 class="text-uppercase fw-bold mb-4">RECURSOS</h6>
+            <p class="texto_footer">
+              <a href="#!" class="text-reset">Recomendaciones</a>
+            </p>
+            <p class="texto_footer">
+              <a href="#!" class="text-reset">Comentarios</a>
+            </p>
+            <p class="texto_footer">
+              <a href="#!" class="text-reset">Reseñas</a>
+            </p>
+            <p class="texto_footer">
+              <a href="#!" class="text-reset">Clientes felices</a>
+            </p>
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+            <!-- Links -->
+            <h6 class="text-uppercase fw-bold mb-4">Ayuda</h6>
+            <p class="texto_footer">
+              <a href="#!" class="text-reset">Contáctanos</a>
+            </p>
+            <p class="texto_footer">
+              <a href="#!" class="text-reset">Preguntas frecuentes</a>
+            </p>
+            <p class="texto_footer">
+              <a href="#!" class="text-reset">Políticas de privacidad</a>
+            </p>
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+            <!-- Links -->
+            <h6 class="text-uppercase fw-bold mb-4">Contacto</h6>
+            <p><i class="fas fa-home me-3"></i> Cabildo 6271, Las Condes</p>
+            <p>
+              <i class="fas fa-envelope me-3"></i>
+              correo@mail.cl
+            </p>
+            <p><i class="fas fa-phone me-3"></i> +56 7 3118 6699</p>
+          </div>
+          <!-- Grid column -->
+        </div>
+        <!-- Grid row -->
+      </div>
+    </section>
+    <!-- Section: Links  -->
+
+    <!-- Copyright -->
+    <div class="text-center p-4 section_footer">
+      Made with <i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i> by <a href="https://github.com/brayanquirozurrutia" target="_blank">Brayan Nicolas Quiroz Urrutia</a>
+    </div>
+    <!-- Copyright -->
+  </footer>
+  <!-- Footer -->
+
+
+    <!-- Cargamos Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <!-- Cargamos MDBootstrap -->
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.0.0/mdb.umd.min.js"></script>
+    <script src="https://kit.fontawesome.com/d10db95298.js" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

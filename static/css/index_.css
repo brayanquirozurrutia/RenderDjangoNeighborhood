@@ -1,0 +1,184 @@
+*{
+    box-sizing: border-box;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: black;
+}
+
+.body{
+    margin: 0;
+    background-color: rgba(236, 255, 243);
+    background: linear-gradient(#ecfff3, #bcccc2);
+}
+
+.nav_{
+    background-color: #9dc08b;
+}
+
+.a_nav{
+    border-radius: 20px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    margin: 2px;
+}
+
+.boton_login{
+    color: black;
+}
+
+.boton_logout{
+    background-color: #3C6255;
+    color: white;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.div_contenido{
+    background-color: #ced4db;
+    border-radius: 10px;
+    padding: 0.5rem;
+    margin: 0.5rem;
+}
+
+.div_carousel{
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #e6ddc1;
+    border-radius: 10px;
+}
+
+.div_texto_carousel{
+    margin-left: 4rem;
+    margin-right: 4rem;
+    margin-top: 1rem;
+}
+
+.boton_carousel{
+    background-color: #9dc08b;
+    color: black;
+}
+
+.img_carousel{
+    box-shadow: 0 1px 5px 1px rgba(106, 106, 106, 0.5);
+    max-height: 300px;
+}
+
+.card{
+    background-color: #EBF3E8;
+    height: 100%;
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+}
+
+.imagen_card{
+    width: 80%;
+    height: 200px;
+    border-radius: 0% 5% 5% 5%;
+}
+
+.botones_cuenta{
+    background-color: #9dc08b;
+    color: black;
+}
+
+.img_wraprer{
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.card_carousel{
+    margin: 0 .5em;
+}
+
+.anterior, .siguiente{
+    width: 6vh;
+    height: 6vh;
+    background-color: #9dc08b;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+}
+
+@media screen and (min-width: 576px) {
+    .carousel_iner{
+        display: flex;
+    }
+    .carousel_item{
+        display: block;
+        margin-right: 0;
+        flex: 0 0 calc(100%/3);
+    }
+}
+
+.section_footer{
+    background-color: #9DC08B;
+}
+
+.footer_{
+    background-color: #e6ddc1;
+    box-shadow: 0 0 1.5rem;
+}
+
+/* Hover de los enlaces del menú de navegación */
+.a_nav:hover{
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    background-color: #3C6255;
+    color: white;
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+}
+
+.boton_carousel:hover{
+    background-color: #3C6255;
+    color: white;
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+}
+
+.botones_cuenta:hover{
+    background-color: #3C6255;
+    color: white;
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+}
+
+.card:hover{
+    background-color: #daddb1 ;
+}
+
+.boton_login:hover{
+    background-color: #3C6255;
+    color: white;
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.boton_logout:hover{
+    box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+}
+
+.anterior:hover, .siguiente:hover{
+    opacity: 0.9;
+}
+
+.corazon_footer:hover{
+    color: red;
+}
+
+.icono_footer:hover{
+    color: purple;
+}
+
+.icono_footer_github:hover{
+    font-size: 1.8rem;
+    color: purple;
+}
+
+.texto_footer:hover{
+    color: purple;
+    font-size: 1.1rem;
+}
+
