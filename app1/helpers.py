@@ -81,7 +81,17 @@ class Functions():
             )
     
     def enviar_enlace_reset_contraseña(self, usuario):
-        """_summary_
+        """Genera y envía un enlace al correo del usuario para cambiar su contraseña.
+
+        Args:
+            usuario (object): Objeto del modelo Usuario
+
+        Details:
+            Esta función genera un token único y una fecha de expiración asociada para cambiar la contrasela de la cuenta del usuario.
+            El token y la fecha de expiración se almacenan en la base de datos usando el modelo PasswordResetToken.
+
+        Note:
+            Esta función no retorna ningún valor directamente, ya que actualiza la base de datos y envía el enlace por correo.
         """
         token = secrets.token_urlsafe()
         fecha_expiracion = timezone.now() + timezone.timedelta(minutes=15)  # Expire en 15 mimutos
