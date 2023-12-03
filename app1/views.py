@@ -78,6 +78,14 @@ def account_created_template(request):
 def expired_token_activate_account_template(request):
     return render(request, 'expired_token_activate_account.html')
 
+def account_not_activated_template(request):
+    estado = request.session.get('estado', False)
+    if estado:
+        request.session['estado'] = False
+        return render(request, 'account_not_activated.html')
+    else:
+        return redirect('index')
+
 def createAccountTemplate(request):
     form = forms.CreateAccountForm()
     
@@ -143,7 +151,9 @@ def activar_cuenta(request, token):
         return redirect('expired_token_activate_account')
     
     else:
-        Cuenta.objects.get(rut_usuario=token_obj.usuario).estado_cuenta = True
+        cuenta_obj = Cuenta.objects.get(rut_usuario=token_obj.usuario)
+        cuenta_obj.estado_cuenta = True
+        cuenta_obj.save()
         token_obj.delete()
 
     return render(request, 'activate_account.html')
@@ -206,11 +216,8 @@ def restablecer_contraseña(request, token):
 
     return render(request, 'reset_password.html', data)
 
-
 def homeTemplate(request):
     # Verificamos si hay una sesión activa
-    
-    # ------------------verificar que la cuenta esté activa--------------
     estado = request.session.get('estado', False)
     if estado:
         error = None; alerta_reiterada = None
@@ -220,181 +227,186 @@ def homeTemplate(request):
         latitud = request.session.get('latitud', None)
         longitud = request.session.get('longitud', None)
         
-        # Obtenemos al usuario que inició sesión
-        usuario = get_usuario_by_rut(rut_usuario)
+        estado_cuenta = Cuenta.objects.get(rut_usuario=rut_usuario).estado_cuenta
+        if estado_cuenta:
         
-        # Buscamos las sesiones del usuario que inicío sesión
-        sesiones = Sesion.objects.filter(id_cuenta=Cuenta.objects.get(rut_usuario = rut_usuario)).order_by('-id_inicio_sesion')
-        
-        # Obtenemos la última vez en línea
-        if len(sesiones) > 1:
-            sesion_anterior = sesiones[1]
-        else:
-            sesion_anterior = sesiones[0]
+            # Obtenemos al usuario que inició sesión
+            usuario = get_usuario_by_rut(rut_usuario)
             
-        # Obtenemos datos relevantes
-        nombre_usuario = usuario.nombre_usuario
-        apellido_usuario = usuario.apellido_usuario
-        fecha_inicio_sesion = sesion_anterior.fecha_inicio_sesion
-        hora_inicio_sesion = sesion_anterior.hora_inicio_sesion
-        foto_de_perfil = usuario.foto_de_perfil.url
-        genero = usuario.genero
-        
-        # Definimos saludo
-        if genero == 'F':
-            saludo = 'Bienvenida'
-        elif genero == 'M':
-            saludo = 'Bienvenido'
-        else:
-            saludo = 'Hola'
-        
-        # Rescatamos las alertas activas para mostrarlas en el mapa
-        alertas_activas = Marcador.objects.filter(fecha_hora__lte= datetime.now(),
-                                                  fecha_hora__gt=(datetime.now()-timedelta(hours=2))
-                                                  )
-        
-        # Crea un mapa centrado en una ubicación específica (por ejemplo, latitud y longitud)
-        try:
-            mapa = folium.Map(location=[latitud, longitud], zoom_start=16)
+            # Buscamos las sesiones del usuario que inicío sesión
+            sesiones = Sesion.objects.filter(id_cuenta=Cuenta.objects.get(rut_usuario = rut_usuario)).order_by('-id_inicio_sesion')
             
-            # Punto ubicación usuario
-            folium.Circle(
-                location=[latitud, longitud],
-                radius=2,
-                color='red',
-                fill=True,
-                fill_color='red',
-                fill_opacity=0.2,
-            ).add_to(mapa)
+            # Obtenemos la última vez en línea
+            if len(sesiones) > 1:
+                sesion_anterior = sesiones[1]
+            else:
+                sesion_anterior = sesiones[0]
+                
+            # Obtenemos datos relevantes
+            nombre_usuario = usuario.nombre_usuario
+            apellido_usuario = usuario.apellido_usuario
+            fecha_inicio_sesion = sesion_anterior.fecha_inicio_sesion
+            hora_inicio_sesion = sesion_anterior.hora_inicio_sesion
+            foto_de_perfil = usuario.foto_de_perfil.url
+            genero = usuario.genero
+            
+            # Definimos saludo
+            if genero == 'F':
+                saludo = 'Bienvenida'
+            elif genero == 'M':
+                saludo = 'Bienvenido'
+            else:
+                saludo = 'Hola'
+            
+            # Rescatamos las alertas activas para mostrarlas en el mapa
+            alertas_activas = Marcador.objects.filter(fecha_hora__lte= datetime.now(),
+                                                    fecha_hora__gt=(datetime.now()-timedelta(hours=2))
+                                                    )
+            
+            # Crea un mapa centrado en una ubicación específica (por ejemplo, latitud y longitud)
+            try:
+                mapa = folium.Map(location=[latitud, longitud], zoom_start=16)
+                
+                # Punto ubicación usuario
+                folium.Circle(
+                    location=[latitud, longitud],
+                    radius=2,
+                    color='red',
+                    fill=True,
+                    fill_color='red',
+                    fill_opacity=0.2,
+                ).add_to(mapa)
 
-            # Radio de alertas
-            folium.Circle(
-                location=[latitud, longitud],
-                radius=300,
-                color='blue',
-                fill=True,
-                fill_color='blue',
-                fill_opacity=0.1,
-            ).add_to(mapa)
+                # Radio de alertas
+                folium.Circle(
+                    location=[latitud, longitud],
+                    radius=300,
+                    color='blue',
+                    fill=True,
+                    fill_color='blue',
+                    fill_opacity=0.1,
+                ).add_to(mapa)
 
-            for marcador in alertas_activas:
-                diccionario_ficha_medica = get_medical_record_details(marcador.__dict__['rut_usuario_id'])
-                if diccionario_ficha_medica is not None:
-                    contenido_popup = '''
-                    <div class="container-fluid shadow rounded-4 my-2 py-2">
-                        <div class="border rounded-4 px-4 mb-2">
-                            <h3 class="fw-bold">{nombre} {apellido}</h3>
-                        </div>
-                        <div class="border rounded-4 px-4 mb-2">
-                            <h5 class="text-center">{mensaje}</h5>
-                        </div>
-                        <div class="border rounded-4 px-4 py-1">
-                        <h4 class="text-center fw-bold">Detalles</h4>
-                            <ul class="list-unstyled">
-                                {items}
-                            </ul>
-                        </div>
-                    </div>'''.format(
-                        nombre=marcador.rut_usuario.nombre_usuario,
-                        apellido=marcador.rut_usuario.apellido_usuario,
-                        mensaje=marcador.mensade_de_alerta.mensaje_alerta,
-                        items='\n'.join([f"<li><strong>{key}:</strong> {value}</li>" for key, value in diccionario_ficha_medica.items() if value is not None]))
+                for marcador in alertas_activas:
+                    diccionario_ficha_medica = get_medical_record_details(marcador.__dict__['rut_usuario_id'])
+                    if diccionario_ficha_medica is not None:
+                        contenido_popup = '''
+                        <div class="container-fluid shadow rounded-4 my-2 py-2">
+                            <div class="border rounded-4 px-4 mb-2">
+                                <h3 class="fw-bold">{nombre} {apellido}</h3>
+                            </div>
+                            <div class="border rounded-4 px-4 mb-2">
+                                <h5 class="text-center">{mensaje}</h5>
+                            </div>
+                            <div class="border rounded-4 px-4 py-1">
+                            <h4 class="text-center fw-bold">Detalles</h4>
+                                <ul class="list-unstyled">
+                                    {items}
+                                </ul>
+                            </div>
+                        </div>'''.format(
+                            nombre=marcador.rut_usuario.nombre_usuario,
+                            apellido=marcador.rut_usuario.apellido_usuario,
+                            mensaje=marcador.mensade_de_alerta.mensaje_alerta,
+                            items='\n'.join([f"<li><strong>{key}:</strong> {value}</li>" for key, value in diccionario_ficha_medica.items() if value is not None]))
+                    else:
+                        contenido_popup = '''
+                        <div class="container-fluid shadow rounded-4 my-2 py-2">
+                            <div class="border rounded-4 px-4 mb-2">
+                                <h3 class="fw-bold">{nombre} {apellido}</h3>
+                            </div>
+                            <div class="border rounded-4 px-4 mb-2">
+                                <h5 class="text-center">{mensaje}</h5>
+                            </div>
+                        </div>'''.format(
+                            nombre=marcador.rut_usuario.nombre_usuario,
+                            apellido=marcador.rut_usuario.apellido_usuario,
+                            mensaje=marcador.mensade_de_alerta.mensaje_alerta,
+                            )
+                    
+                    nuevo_marcador = folium.Marker(
+                        location=[marcador.latitud, marcador.longitud],
+                        popup=folium.Popup(contenido_popup, max_width=400),
+                    )
+                    
+                    nuevo_marcador.add_to(mapa)
+                
+                mapa_html = mapa._repr_html_()
+                
+            except Exception as e:
+                print(f"Error al generar mapa: {e}")
+                error = 'Error al generar mapa'
+            
+            
+            # Validamos si se ha emitido una alerta
+            if request.method == 'POST' and 'agregar_evento' in request.POST:
+                # Buscamos la última alerta emitida por el usuario
+                ultimo_evento = (Evento.objects.filter(rut_usuario=usuario).order_by('-id_evento').values_list('fecha_evento', 'hora_evento').first())
+                # Verificamos si es su primera alerta
+                if ultimo_evento != None:
+                    # Pasamos los datos a tipo datetime
+                    hora_ultimo_evento = [int(valor) for valor in ultimo_evento[1].split(':')]
+                    date_ultimo_evento = datetime.combine(ultimo_evento[0], time(hora_ultimo_evento[0], hora_ultimo_evento[1], hora_ultimo_evento[2]))
+                    # Calculamos la cantidad de segundos transcurridos entre la última alerta emitida y la siguiente
+                    delta_segundos = (datetime.now() - date_ultimo_evento).total_seconds()
                 else:
-                    contenido_popup = '''
-                    <div class="container-fluid shadow rounded-4 my-2 py-2">
-                        <div class="border rounded-4 px-4 mb-2">
-                            <h3 class="fw-bold">{nombre} {apellido}</h3>
-                        </div>
-                        <div class="border rounded-4 px-4 mb-2">
-                            <h5 class="text-center">{mensaje}</h5>
-                        </div>
-                    </div>'''.format(
-                        nombre=marcador.rut_usuario.nombre_usuario,
-                        apellido=marcador.rut_usuario.apellido_usuario,
-                        mensaje=marcador.mensade_de_alerta.mensaje_alerta,
-                        )
-                
-                nuevo_marcador = folium.Marker(
-                    location=[marcador.latitud, marcador.longitud],
-                    popup=folium.Popup(contenido_popup, max_width=400),
-                )
-                
-                nuevo_marcador.add_to(mapa)
+                    delta_segundos = 301
+                # Verificamos si se puede emitir la alerta
+                if(delta_segundos <= 300):
+                    alerta_reiterada = 'Debe esperar al menos 5 minutos para emitir la siguiente alerta'
+                else:
+                    Evento(
+                        hora_evento=datetime.now().strftime('%H:%M:%S'),
+                        fecha_evento=datetime.now().strftime('%Y-%m-%d'),
+                        ubicacion_evento=f'{latitud},{longitud}',
+                        rut_usuario=usuario
+                    ).save()
+                    
+                    # Buscamos el mensaje de alerta
+                    mensaje_de_alerta = MensajeDeAlerta.objects.filter(rut_usuario=usuario).values_list('mensaje_alerta')[0][0]
+                    # Buscamos objeto MensajeDealerta asociado al rut_usuario
+                    mensaje_alerta_ = MensajeDeAlerta.objects.get(rut_usuario=usuario)
+                    
+                    # Almacenamos el marcador en la BBDD
+                    Marcador(latitud=latitud, longitud=longitud, fecha_hora = datetime.now().strftime('%Y-%m-%d %H:%M:%S'), rut_usuario=usuario, mensade_de_alerta=mensaje_alerta_).save()
+                    
+                    # Rescatamos listado de correos contactos de emergencia
+                    lista_rut_contactos_emergencia = DetalleContactoEmergencia.objects.filter(rut_usuario=rut_usuario).values_list('rut_contacto_emergencia', flat=True)
+                    
+                    correos_contactos_emergencia = Usuario.objects.filter(rut_usuario__in=lista_rut_contactos_emergencia).values('correo_usuario').values_list('correo_usuario')
+                    correos_contactos_emergencia = list(correos_contactos_emergencia)
+                    
+                    # Pasamos los correos a listado
+                    lista_correos = []
+                    
+                    for valor in correos_contactos_emergencia:
+                        for sub_valor in valor:
+                            lista_correos.append(sub_valor)
+                    try:
+                        Functions.notificar_alerta_por_correo(Functions, mensaje_de_alerta, nombre_usuario, latitud, longitud, lista_correos)
+                    except Exception as e:
+                        print(e)
+                    
+                    return redirect('home')
             
-            mapa_html = mapa._repr_html_()
+            data = {
+                'rut_usuario': rut_usuario,
+                'nombre_usuario': nombre_usuario,
+                'apellido_usuario': apellido_usuario,
+                'fecha_inicio_sesion': fecha_inicio_sesion,
+                'hora_inicio_sesion': hora_inicio_sesion,
+                'foto_de_perfil': foto_de_perfil,
+                'latitud': latitud,
+                'longitud': longitud,
+                'mapa_html': mapa_html,
+                'saludo': saludo,
+                'error': error,
+                'alerta_reiterada': alerta_reiterada,
+            }
             
-        except Exception as e:
-            print(f"Error al generar mapa: {e}")
-            error = 'Error al generar mapa'
-        
-        
-        # Validamos si se ha emitido una alerta
-        if request.method == 'POST' and 'agregar_evento' in request.POST:
-            # Buscamos la última alerta emitida por el usuario
-            ultimo_evento = (Evento.objects.filter(rut_usuario=usuario).order_by('-id_evento').values_list('fecha_evento', 'hora_evento').first())
-            # Verificamos si es su primera alerta
-            if ultimo_evento != None:
-                # Pasamos los datos a tipo datetime
-                hora_ultimo_evento = [int(valor) for valor in ultimo_evento[1].split(':')]
-                date_ultimo_evento = datetime.combine(ultimo_evento[0], time(hora_ultimo_evento[0], hora_ultimo_evento[1], hora_ultimo_evento[2]))
-                # Calculamos la cantidad de segundos transcurridos entre la última alerta emitida y la siguiente
-                delta_segundos = (datetime.now() - date_ultimo_evento).total_seconds()
-            else:
-                delta_segundos = 301
-            # Verificamos si se puede emitir la alerta
-            if(delta_segundos <= 300):
-                alerta_reiterada = 'Debe esperar al menos 5 minutos para emitir la siguiente alerta'
-            else:
-                Evento(
-                    hora_evento=datetime.now().strftime('%H:%M:%S'),
-                    fecha_evento=datetime.now().strftime('%Y-%m-%d'),
-                    ubicacion_evento=f'{latitud},{longitud}',
-                    rut_usuario=usuario
-                ).save()
-                
-                # Buscamos el mensaje de alerta
-                mensaje_de_alerta = MensajeDeAlerta.objects.filter(rut_usuario=usuario).values_list('mensaje_alerta')[0][0]
-                # Buscamos objeto MensajeDealerta asociado al rut_usuario
-                mensaje_alerta_ = MensajeDeAlerta.objects.get(rut_usuario=usuario)
-                
-                # Almacenamos el marcador en la BBDD
-                Marcador(latitud=latitud, longitud=longitud, fecha_hora = datetime.now().strftime('%Y-%m-%d %H:%M:%S'), rut_usuario=usuario, mensade_de_alerta=mensaje_alerta_).save()
-                
-                # Rescatamos listado de correos contactos de emergencia
-                lista_rut_contactos_emergencia = DetalleContactoEmergencia.objects.filter(rut_usuario=rut_usuario).values_list('rut_contacto_emergencia', flat=True)
-                
-                correos_contactos_emergencia = Usuario.objects.filter(rut_usuario__in=lista_rut_contactos_emergencia).values('correo_usuario').values_list('correo_usuario')
-                correos_contactos_emergencia = list(correos_contactos_emergencia)
-                
-                # Pasamos los correos a listado
-                lista_correos = []
-                
-                for valor in correos_contactos_emergencia:
-                    for sub_valor in valor:
-                        lista_correos.append(sub_valor)
-                try:
-                    Functions.notificar_alerta_por_correo(Functions, mensaje_de_alerta, nombre_usuario, latitud, longitud, lista_correos)
-                except Exception as e:
-                    print(e)
-                
-                return redirect('home')
-        
-        data = {
-            'rut_usuario': rut_usuario,
-            'nombre_usuario': nombre_usuario,
-            'apellido_usuario': apellido_usuario,
-            'fecha_inicio_sesion': fecha_inicio_sesion,
-            'hora_inicio_sesion': hora_inicio_sesion,
-            'foto_de_perfil': foto_de_perfil,
-            'latitud': latitud,
-            'longitud': longitud,
-            'mapa_html': mapa_html,
-            'saludo': saludo,
-            'error': error,
-            'alerta_reiterada': alerta_reiterada,
-        }
-        
-        return render(request, 'home.html', data)
+            return render(request, 'home.html', data)
+        else:
+            return redirect('account_not_activated')
     else:
         return redirect('login')
 
