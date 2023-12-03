@@ -74,6 +74,7 @@ class Evento(models.Model):
 class Cuenta(models.Model):
     id_cuenta = models.AutoField(primary_key=True)
     fecha_creacion = models.DateField(default=datetime.now().strftime('%Y-%m-%d'))
+    estado_cuenta = models.BooleanField(default=False)
     rut_usuario = models.ForeignKey("Usuario", on_delete=models.CASCADE)
     
     @receiver(post_save, sender=Usuario)
@@ -99,6 +100,11 @@ class PasswordResetToken(models.Model):
     token = models.CharField(max_length=255)
     fecha_expiracion = models.DateTimeField()
 
+class ActivateAccountToken(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
+    token_aat = models.CharField(max_length=255)
+    fecha_expiracion_aat = models.DateTimeField()
+
 # ---------------------------------------------- Modelos Nivel 3 ----------------------------------------------
 class Sesion(models.Model):
     id_inicio_sesion = models.AutoField(primary_key=True)
@@ -122,7 +128,7 @@ class DetalleEnfermedad(models.Model):
     
     class Meta:
         unique_together = ('id_enfermedad', 'id_info_salud')
-        
+
 class DetalleMedicamento(models.Model):
     id_medicamento = models.ForeignKey("Medicamento", on_delete=models.CASCADE)
     id_info_salud = models.ForeignKey("InformacionDeSalud", on_delete=models.CASCADE)
