@@ -16,8 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', "False").lower() == 'True'
-
+DEBUG = os.environ.get('DEBUG')
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(" ")
 
 # Application definition
@@ -78,7 +77,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.parse(os.environ.get('EXTERNAL_DATABASE_URL'))
+# DATABASES['default'] = dj_database_url.parse(os.environ.get('EXTERNAL_DATABASE_URL'))
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -138,7 +137,7 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-if DEBUG == "False":
+if DEBUG == False:
     SECURE_HSTS_SECONDS = 60
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
