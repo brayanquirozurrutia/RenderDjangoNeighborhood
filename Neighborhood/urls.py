@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path
-from app1.views import changePasswordTemplate, createAccountTemplate, indexTemplate, homeTemplate, friendsTemplate, add_new_friend_template, edit_friend, alert_message, alert_summary, alert_detail, loginTemplate, logout_template, profile_template, restablecer_contraseña, activar_cuenta
+from app1.views import changePasswordTemplate, createAccountTemplate, indexTemplate, homeTemplate, friendsTemplate, add_new_friend_template, edit_friend, alert_message, alert_summary, alert_detail, loginTemplate, logout_template, profile_template, restablecer_contraseña, activar_cuenta, account_created_template, expired_token_activate_account_template
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -11,6 +11,8 @@ urlpatterns = [
     path('', indexTemplate, name='index'),
     path('login/', loginTemplate, name='login'),
     path('create-account/', createAccountTemplate, name='create_account'),
+    path('account_created/', account_created_template, name='account_created'),
+    path('expired_token_activate_account/', expired_token_activate_account_template, name='expired_token_activate_account'),
     path('activate_account/<str:token>/', activar_cuenta, name='activar_cuenta'),
     path('change-password/', changePasswordTemplate, name='change_password'),
     path('reset_password/<str:token>/', restablecer_contraseña, name='restablecer_contraseña'),

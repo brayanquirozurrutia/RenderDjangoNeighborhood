@@ -16,6 +16,7 @@ from app1.utils import get_usuario_by_rut, get_medical_record_status, get_medica
 
 def indexTemplate(request):
     request.session['estado'] = False
+    request.session['cuenta_creada'] = False
     
     cards, cards_carousel = Functions.cards_content(Functions)
         
@@ -67,6 +68,16 @@ def loginTemplate(request):
 
     return render(request, 'login.html', data)
 
+def account_created_template(request):
+    cuenta_creada = request.session.get('cuenta_creada', False)
+    if cuenta_creada:
+        return render(request, 'account_created.html')
+    else:
+        return redirect('index')
+    
+def expired_token_activate_account_template(request):
+    return render(request, 'expired_token_activate_account.html')
+
 def createAccountTemplate(request):
     form = forms.CreateAccountForm()
     
@@ -102,7 +113,9 @@ def createAccountTemplate(request):
                 
                 Functions.enviar_enlace_confirmar_cuenta(Functions, usuario)
                 
-                return render (request, 'account_created.html')
+                request.session['cuenta_creada'] = True
+                
+                return redirect ('account_created')
 
             except Exception as e:
                 print(e)
@@ -124,10 +137,10 @@ def activar_cuenta(request, token):
     try:
         token_obj = get_object_or_404(ActivateAccountToken, token_aat=token)
     except:
-        return render(request, 'expired_token_activate_account.html')
+        return redirect('expired_token_activate_account')
     
     if timezone.now() > token_obj.fecha_expiracion_aat:
-        return render(request, 'expired_token.html')
+        return redirect('expired_token_activate_account')
     
     else:
         Cuenta.objects.get(rut_usuario=token_obj.usuario).estado_cuenta = True
