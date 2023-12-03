@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 import secrets
 from django.utils import timezone
-from .models import PasswordResetToken
+from .models import PasswordResetToken, ActivateAccountToken
 
 from Neighborhood import settings
 
@@ -60,6 +60,15 @@ class Functions():
         return False
     
     def notificar_alerta_por_correo(self, mensaje_de_alerta, nombre_de_usuario, latitud, longitud, correos):
+        """_summary_
+
+        Args:
+            mensaje_de_alerta (_type_): _description_
+            nombre_de_usuario (_type_): _description_
+            latitud (_type_): _description_
+            longitud (_type_): _description_
+            correos (_type_): _description_
+        """
         
         cuerpo_correo = f'{mensaje_de_alerta}\n\nTu contacto de emergencia {nombre_de_usuario} ha emitido una alerta en las coordenadas latitud: {latitud}, longitud: {longitud}\n\nVisita el siguiente link para acceder inmediatamente https://www.google.com/maps?q={latitud},{longitud}'
         
@@ -72,6 +81,8 @@ class Functions():
             )
     
     def enviar_enlace_reset_contraseña(self, usuario):
+        """_summary_
+        """
         token = secrets.token_urlsafe()
         fecha_expiracion = timezone.now() + timezone.timedelta(minutes=15)  # Expire en 15 mimutos
         PasswordResetToken.objects.update_or_create(
@@ -80,11 +91,114 @@ class Functions():
         )
 
         # Ahora, envía el enlace por correo
-        enlace = f'http://http://127.0.0.1:8000/restablecer_contraseña/{token}/'
+        enlace = f'http://127.0.0.1:8000/reset_password/{token}/'
         send_mail(
             'Restablecimiento de Contraseña',
-            f'Por favor, haz clic en el siguiente enlace para restablecer tu contraseña: {enlace}',
+            f'Por favor, haz clic en el siguiente enlace para restablecer tu contraseña: {enlace}\n\nEste enlace tiene una duración de 15 minutos desde la recepción de este correo',
             settings.EMAIL_HOST_USER,
             [usuario.correo_usuario],
             fail_silently=False,
         )
+    
+    def enviar_enlace_confirmar_cuenta(self, usuario):
+        """_summary_
+
+        Args:
+            usuario (_type_): _description_
+        """
+        token_aat = secrets.token_urlsafe()
+        fecha_expiracion_aat = timezone.now() + timezone.timedelta(minutes=15)
+        ActivateAccountToken.objects.update_or_create(
+            usuario=usuario,
+            defaults={'token_aat': token_aat, 'fecha_expiracion_aat': fecha_expiracion_aat}
+        )
+
+        # Ahora, envía el enlace por correo
+        enlace = f'http://127.0.0.1:8000/activate_account/{token_aat}/'
+        send_mail(
+            'Activar cuenta',
+            f'Hola {usuario.nombre_usuario}, por favor, haz clic en el siguiente enlace para activar tu cuenta: {enlace}\n\nEste enlace tiene una duración de 15 minutos desde la recepción de este correo',
+            settings.EMAIL_HOST_USER,
+            [usuario.correo_usuario],
+            fail_silently=False,
+        )
+    
+    def cards_content(self):
+        """Crea el contenido de los card para usar en el index.html.
+
+        Returns:
+            tuple: Listado con el contenido de los cards en dos secciones distintas del index.html.
+                El primer elemento de la tupla contiene cards para una sección.
+                El segundo elemento de la tupla contiene cards_carousel para otra sección.
+        """
+        
+        cards = [
+            {
+                'title': 'Parque Bicentenario',
+                'src': 'images/parque_bicentenario.webp',
+                'alt': 'Imagen parque bicentenario'
+            },
+            {
+                'title': 'Parque Metropolitano',
+                'src': 'images/parque_metropolitano.webp',
+                'alt': 'Imagen parque Metropolitano'
+            },
+            {
+                'title': 'Parque Araucano',
+                'src': "images/parque_araucano.webp",
+                'alt': 'Imagen parque Araucano'
+            },
+            ]
+        
+        cards_carousel = [
+            {
+                "title": "Las Condes", 
+                "src": "images/las_condes.webp",
+                "alt": "Imagen Las Condes"
+            },
+            {
+                "title": "Santiago Centro",
+                "src": "images/santiago_centro.webp",
+                "alt": "Imagen Santiago Centro"
+            },
+            {
+                "title": "Vitacura",
+                "src": "images/vitacura.webp",
+                "alt": "Imagen Vitacura"
+            },
+            {
+                "title": "Lo Barnechea",
+                "src": "images/lo_barnechea.webp",
+                "alt": "Imagen Lo Barnechea"
+            },
+            {
+                "title": "Providencia",
+                "src": "images/providencia.webp",
+                "alt": "Imagen Providencia"
+            },
+            {
+                "title": "Ñuñoa",
+                "src": "images/ñuñoa.webp",
+                "alt": "Imagen Ñuñoa"
+            },
+            {
+                "title": "Huechuraba",
+                "src": "images/huechuraba.webp",
+                "alt": "Imagen Huechuraba"
+            },
+            {
+                "title": "Peñalolen",
+                "src": "images/peñalolen.webp",
+                "alt": "Imagen Peñalolen"
+            },
+            ]
+        
+        for i, card in enumerate(cards, start=1):
+            card['data_bs_target'] = f'modal_{i}'
+            card['content'] = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia'
+    
+        for i, card in enumerate(cards_carousel, start=1):
+            card['data_bs_target'] = f'modal_carousel_{i}'
+            card['content'] = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia'
+        
+        return cards, cards_carousel
