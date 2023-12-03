@@ -101,10 +101,17 @@ class Functions():
         )
     
     def enviar_enlace_confirmar_cuenta(self, usuario):
-        """_summary_
+        """Genera y envía un enlace al correo del usuario para confirmar la creación de su cuenta en Neighborhood.
 
         Args:
-            usuario (_type_): _description_
+            usuario (object): Objeto del modelo Usuario
+
+        Details:
+            Esta función genera un token único y una fecha de expiración asociada para activar la cuenta del usuario.
+            El token y la fecha de expiración se almacenan en la base de datos usando el modelo ActivateAccountToken.
+
+        Note:
+            Esta función no retorna ningún valor directamente, ya que actualiza la base de datos y envía el enlace por correo.
         """
         token_aat = secrets.token_urlsafe()
         fecha_expiracion_aat = timezone.now() + timezone.timedelta(minutes=15)
@@ -113,7 +120,6 @@ class Functions():
             defaults={'token_aat': token_aat, 'fecha_expiracion_aat': fecha_expiracion_aat}
         )
 
-        # Ahora, envía el enlace por correo
         enlace = f'http://127.0.0.1:8000/activate_account/{token_aat}/'
         send_mail(
             'Activar cuenta',
