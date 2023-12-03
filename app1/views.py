@@ -8,7 +8,7 @@ from app1 import forms
 from django.contrib.auth.hashers import check_password
 from django.utils import timezone
 
-from app1.models import ContactoEmergencia, Cuenta, DetalleContactoEmergencia, Evento, MensajeDeAlerta, PasswordResetToken, Sesion, Usuario, Marcador, DetalleEnfermedad, DetalleAlergia, DetalleDiscapacidad, DetalleMedicamento, InformacionDeSalud, Enfermedad, Medicamento, Discapacidad, Alergia
+from app1.models import ContactoEmergencia, Cuenta, DetalleContactoEmergencia, Evento, MensajeDeAlerta, PasswordResetToken, Sesion, Usuario, Marcador, DetalleEnfermedad, DetalleAlergia, DetalleDiscapacidad, DetalleMedicamento, InformacionDeSalud, Enfermedad, Medicamento, Discapacidad, Alergia, ActivateAccountToken
 
 from app1.helpers import Functions
 
@@ -17,75 +17,7 @@ from app1.utils import get_usuario_by_rut, get_medical_record_status, get_medica
 def indexTemplate(request):
     request.session['estado'] = False
     
-    cards = [
-        {
-            'title': 'Parque Bicentenario',
-            'content': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia',
-            'src': 'images/parque_bicentenario.webp',
-            'alt': 'Imagen parque bicentenario'
-        },
-        {
-            'title': 'Parque Metropolitano',
-            'content': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia',
-            'src': 'images/parque_metropolitano.webp',
-            'alt': 'Imagen parque Metropolitano'
-        },
-        {
-            'title': 'Parque Araucano',
-            'content': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia',
-            'src': "images/parque_araucano.webp",
-            'alt': 'Imagen parque Araucano'
-        }
-    ]
-    
-    cards_carousel = [
-        {
-            "title": "Las Condes", 
-            "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia.",
-            "src": "images/las_condes.webp",
-        },
-        {
-            "title": "Santiago Centro",
-            "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia.",
-            "src": "images/santiago_centro.webp",
-        },
-        {
-            "title": "Vitacura",
-            "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia.",
-            "src": "images/vitacura.webp",
-        },
-        {
-            "title": "Lo Barnechea",
-            "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia.",
-            "src": "images/lo_barnechea.webp",
-        },
-        {
-            "title": "Providencia",
-            "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia.",
-            "src": "images/providencia.webp",
-        },
-        {
-            "title": "Ñuñoa",
-            "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia.",
-            "src": "images/ñuñoa.webp",
-        },
-        {
-            "title": "Huechuraba",
-            "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia.",
-            "src": "images/huechuraba.webp",
-        },
-        {
-            "title": "Peñalolen",
-            "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia.",
-            "src": "images/peñalolen.webp",
-        },
-    ]
-    
-    for i, card in enumerate(cards, start=1):
-        card['data_bs_target'] = f'modal_{i}'
-    
-    for i, card in enumerate(cards_carousel, start=1):
-        card['data_bs_target'] = f'modal_carousel_{i}'
+    cards, cards_carousel = Functions.cards_content(Functions)
         
     data = {
         'cards': cards,
@@ -109,7 +41,6 @@ def loginTemplate(request):
                 latitude = request.POST.get('latitude')
                 longitude = request.POST.get('longitude')
                 
-                # coordenadas = Functions.obtiene_coordenadas(Functions)
                 coordenadas_str = f'{latitude},{longitude}'
                 sesion = Sesion(
                     fecha_inicio_sesion=datetime.now().strftime('%Y-%m-%d'),
@@ -135,14 +66,14 @@ def loginTemplate(request):
     }
 
     return render(request, 'login.html', data)
-    
 
 def createAccountTemplate(request):
     form = forms.CreateAccountForm()
+    
     data = {
             'Form': form,
             'error': None,
-        }
+            }
     
     if request.method == 'POST':
         form = forms.CreateAccountForm(request.POST)
@@ -169,7 +100,10 @@ def createAccountTemplate(request):
                                 rut_usuario = usuario
                                 ).save()
                 
-                return redirect('index')
+                Functions.enviar_enlace_confirmar_cuenta(Functions, usuario)
+                
+                return render (request, 'account_created.html')
+
             except Exception as e:
                 print(e)
         else:
@@ -186,6 +120,21 @@ def createAccountTemplate(request):
     
     return render(request, 'create-account.html', data)
 
+def activar_cuenta(request, token):
+    try:
+        token_obj = get_object_or_404(ActivateAccountToken, token_aat=token)
+    except:
+        return render(request, 'expired_token_activate_account.html')
+    
+    if timezone.now() > token_obj.fecha_expiracion_aat:
+        return render(request, 'expired_token.html')
+    
+    else:
+        Cuenta.objects.get(rut_usuario=token_obj.usuario).estado_cuenta = True
+        token_obj.delete()
+
+    return render(request, 'activate_account.html')
+
 def changePasswordTemplate(request):
     if request.method == 'POST':
         form = forms.ChangePasswordForm(request.POST)
@@ -196,8 +145,6 @@ def changePasswordTemplate(request):
             
             return redirect('index')
             
-            # usuario.contrasenia_usuario = nueva_contrasenia
-            # usuario.save()
         else:
             data = {
                 'Form': form,
@@ -211,17 +158,18 @@ def changePasswordTemplate(request):
         'Form': form,
         'error': None,
     }
+    
     return render(request, 'change-password.html', data)
 
 def restablecer_contraseña(request, token):
     try:
         token_obj = get_object_or_404(PasswordResetToken, token=token)
     except:
-        return render(request, 'token_expirado.html')
+        return render(request, 'expired_token.html')
     error = None
     
     if timezone.now() > token_obj.fecha_expiracion:
-        return render(request, 'token_expirado.html')
+        return render(request, 'expired_token.html')
     
     else:
         form = forms.ReestablecerContraseniaForm()
@@ -237,16 +185,19 @@ def restablecer_contraseña(request, token):
                     usuario.save()
                     token_obj.delete()
                     return redirect('index')
+                # redireccionar a una ´´agina simple que indica que la contraseña fue cambiada
     data = {
         'Form': form,
         'error': error,
     }
 
-    return render(request, 'reestablecer_contrasenia.html', data)
+    return render(request, 'reset_password.html', data)
 
 
 def homeTemplate(request):
     # Verificamos si hay una sesión activa
+    
+    # ------------------verificar que la cuenta esté activa--------------
     estado = request.session.get('estado', False)
     if estado:
         error = None; alerta_reiterada = None
@@ -412,13 +363,6 @@ def homeTemplate(request):
                     Functions.notificar_alerta_por_correo(Functions, mensaje_de_alerta, nombre_usuario, latitud, longitud, lista_correos)
                 except Exception as e:
                     print(e)
-                                    
-                # nuevo_marcador = folium.Marker(
-                #         location=[latitud, longitud],
-                #         popup=f'{usuario.nombre_usuario} {usuario.apellido_usuario}\n{mensaje_de_alerta}'
-                #     )
-                # nuevo_marcador.add_to(mapa)
-                # mapa_html = mapa._repr_html_()
                 
                 return redirect('home')
         
