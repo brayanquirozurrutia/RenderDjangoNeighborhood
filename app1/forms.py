@@ -256,4 +256,3 @@ class EnfermedadesForm(forms.Form):
         # Agrega clases a las etiquetas (labels)
         for field_name, field in self.fields.items():
             field.widget.attrs['placeholder'] = field.label
-    

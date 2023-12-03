@@ -16,7 +16,6 @@ from app1.utils import get_usuario_by_rut, get_medical_record_status, get_medica
 
 def indexTemplate(request):
     request.session['estado'] = False
-    request.session['cuenta_creada'] = False
     
     cards, cards_carousel = Functions.cards_content(Functions)
         
@@ -71,6 +70,7 @@ def loginTemplate(request):
 def account_created_template(request):
     cuenta_creada = request.session.get('cuenta_creada', False)
     if cuenta_creada:
+        request.session['cuenta_creada'] = False
         return render(request, 'account_created.html')
     else:
         return redirect('index')
@@ -80,11 +80,20 @@ def expired_token_activate_account_template(request):
 
 def account_not_activated_template(request):
     estado = request.session.get('estado', False)
-    if estado:
-        request.session['estado'] = False
-        return render(request, 'account_not_activated.html')
+    estado_cuenta = request.session.get('estado_cuenta', False)
+    if estado and not estado_cuenta:
+        if request.method == 'POST':
+            Functions.enviar_enlace_confirmar_cuenta(Functions, get_usuario_by_rut(
+                request.session.get('rut_usuario', None)
+            ))
+            
+            request.session['estado'] = False
+            
+            return redirect('index')
     else:
         return redirect('index')
+    
+    return render(request, 'account_not_activated.html')
 
 def createAccountTemplate(request):
     form = forms.CreateAccountForm()
@@ -228,6 +237,7 @@ def homeTemplate(request):
         longitud = request.session.get('longitud', None)
         
         estado_cuenta = Cuenta.objects.get(rut_usuario=rut_usuario).estado_cuenta
+        request.session['estado_cuenta'] = estado_cuenta
         if estado_cuenta:
         
             # Obtenemos al usuario que inició sesión
