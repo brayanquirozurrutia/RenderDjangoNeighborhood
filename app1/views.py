@@ -167,6 +167,25 @@ def activar_cuenta(request, token):
 
     return render(request, 'activate_account.html')
 
+def pending_password_change_template(request):
+    solicitud_cambio_contraseña = request.session.get('solicitud_cambio_contraseña', False)
+    if solicitud_cambio_contraseña:
+        request.session['solicitud_cambio_contraseña'] = False
+        return render(request, 'pending_password_change.html')
+    else:
+        return redirect('index')
+    
+def password_changed_template(request):
+    contraseña_cambiada = request.session.get('contraseña_cambiada', False)
+    if contraseña_cambiada:
+        request.session['contraseña_cambiada'] = False
+        return render(request, 'password_changed.html')
+    else:
+        return redirect('index')
+
+def expired_token_change_password_template(request):
+    return render(request, 'expied_token.html')
+
 def changePasswordTemplate(request):
     if request.method == 'POST':
         form = forms.ChangePasswordForm(request.POST)
@@ -175,7 +194,8 @@ def changePasswordTemplate(request):
             usuario = get_usuario_by_rut(rut)
             Functions.enviar_enlace_reset_contraseña(Functions, usuario)
             
-            return redirect('index')
+            request.session['solicitud_cambio_contraseña'] = True
+            return redirect('pending_password_change')
             
         else:
             data = {
@@ -216,8 +236,8 @@ def restablecer_contraseña(request, token):
                     usuario.contrasenia_usuario = nueva_contrasenia
                     usuario.save()
                     token_obj.delete()
-                    return redirect('index')
-                # redireccionar a una ´´agina simple que indica que la contraseña fue cambiada
+                    request.session['contraseña_cambiada'] = False
+                    return redirect('changed_password')
     data = {
         'Form': form,
         'error': error,
