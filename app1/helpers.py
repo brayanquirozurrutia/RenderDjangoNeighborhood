@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 import secrets
 from django.utils import timezone
 from .models import PasswordResetToken, ActivateAccountToken
-from pyproj import Proj, transform
+from math import sqrt
 import utm
 
 from Neighborhood import settings
@@ -221,20 +221,26 @@ class Functions():
         
         return cards, cards_carousel
     
-    def zona_alertas(self, latitud, longitud):
-        utm_ = utm.from_latlon(float(latitud), float(longitud))
-        print(utm_)
+    def zona_alertas(self, latitud_centro, longitud_centro, latitud_alerta, longitud_alerta):
+        """Calcula la distancia entre la ubicación del usuario que inicia sesión y la ubicación de las alertas activas emitidas dentro de Neighborhood
+
+        Args:
+            latitud_centro (str): Latitud del usuario que inicia sesión
+            longitud_centro (str): Longitud del usuario que inicia sesión
+            latitud_alerta (str): Latitud de la alerta cercana activa
+            longitud_alerta (str): Longitud de la alerta cercana activa
         
-        utmx_mas = utm_[0] + 300
-        utmx_menos = utm_[0] - 300
-        utmy_mas = utm_[1] + 300
-        utmy_menos = utm_[1] - 300
+        Details:
+            Esta función transforma las coordenadas geográficas en coordenadas UTM para obtener distancias en metros.
+
+        Returns:
+            float: Distancia entre el usuario que inicia sesión y el marcador activo dentro del mapa
+        """
+        utm_centro = utm.from_latlon(float(latitud_centro), float(longitud_centro))
+        utm_alerta = utm.from_latlon(float(latitud_alerta), float(longitud_alerta))
         
-        punto_a = utm.to_latlon(utmx_mas, utm_[1], utm_[2], utm_[3])
-        punto_b = utm.to_latlon(utm_[0], utmy_mas, utm_[2], utm_[3])
-        punto_c = utm.to_latlon(utmx_menos, utm_[1], utm_[2], utm_[3])
-        punto_d = utm.to_latlon(utm_[0], utmy_menos, utm_[2], utm_[3])
+        radio = sqrt((utm_alerta[0] - utm_centro[0])**2 + (utm_alerta[1] - utm_centro[1])**2)
         
-        return punto_a, punto_b, punto_c, punto_d
+        return radio
         
         

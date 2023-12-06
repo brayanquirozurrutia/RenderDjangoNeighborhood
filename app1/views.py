@@ -249,7 +249,7 @@ def homeTemplate(request):
     # Verificamos si hay una sesión activa
     estado = request.session.get('estado', False)
     if estado:
-        error = None; alerta_reiterada = None
+        error = None; alerta_reiterada = None; contador_notificaciones = 0
         
         # Rescatamos los datos de quién inicio sesión
         rut_usuario = request.session.get('rut_usuario', None)
@@ -292,8 +292,6 @@ def homeTemplate(request):
             alertas_activas = Marcador.objects.filter(fecha_hora__lte= datetime.now(),
                                                     fecha_hora__gt=(datetime.now()-timedelta(hours=2))
                                                     )
-            # generamos los extremos
-            punto_a, punto_b, punto_c, punto_d = Functions.zona_alertas(Functions, latitud, longitud)
             
             # Crea un mapa centrado en una ubicación específica (por ejemplo, latitud y longitud)
             try:
@@ -302,46 +300,6 @@ def homeTemplate(request):
                 # Punto ubicación usuario
                 folium.Circle(
                     location=[latitud, longitud],
-                    radius=2,
-                    color='red',
-                    fill=True,
-                    fill_color='red',
-                    fill_opacity=0.2,
-                ).add_to(mapa)
-                
-                # Punto a
-                folium.Circle(
-                    location=[punto_a[0], punto_a[1]],
-                    radius=2,
-                    color='red',
-                    fill=True,
-                    fill_color='red',
-                    fill_opacity=0.2,
-                ).add_to(mapa)
-                
-                # Punto b
-                folium.Circle(
-                    location=[punto_b[0], punto_b[1]],
-                    radius=2,
-                    color='red',
-                    fill=True,
-                    fill_color='red',
-                    fill_opacity=0.2,
-                ).add_to(mapa)
-                
-                # Punto c
-                folium.Circle(
-                    location=[punto_c[0], punto_c[1]],
-                    radius=2,
-                    color='red',
-                    fill=True,
-                    fill_color='red',
-                    fill_opacity=0.2,
-                ).add_to(mapa)
-                
-                # Punto d
-                folium.Circle(
-                    location=[punto_d[0], punto_d[1]],
                     radius=2,
                     color='red',
                     fill=True,
@@ -402,7 +360,12 @@ def homeTemplate(request):
                     )
                     
                     nuevo_marcador.add_to(mapa)
-                
+                    
+                    if marcador.rut_usuario != usuario:
+                        distancia_centro_alertas = Functions.zona_alertas(Functions, latitud, longitud, marcador.latitud, marcador.longitud)
+                        if distancia_centro_alertas <= 300:
+                            contador_notificaciones += 1
+                            
                 mapa_html = mapa._repr_html_()
                 
             except Exception as e:
@@ -474,6 +437,7 @@ def homeTemplate(request):
                 'saludo': saludo,
                 'error': error,
                 'alerta_reiterada': alerta_reiterada,
+                'contador_notificaciones': contador_notificaciones,
             }
             
             return render(request, 'home.html', data)

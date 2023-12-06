@@ -52,6 +52,10 @@
     box-shadow: 0 0 1.5rem;
 }
 
+.modal_{
+    background-color: #F5F7F8;
+}
+
 .botones_cuenta:hover{
     background-color: #3C6255;
     color: white;
@@ -62,6 +66,10 @@
 .boton_logout:hover{
     box-shadow: 0 5px 10px 2px rgba(0, 0, 0, 0.5);
     text-shadow: 0 0 10px rgba(157, 192, 139, 0.8), 0 0 20px rgba(157, 192, 139, 0.8), 0 0 30px rgba(157, 192, 139, 0.8);
+}
+
+.enlace_notificaciones:hover{
+    cursor: pointer;
 }
 
 .corazon_footer:hover{
