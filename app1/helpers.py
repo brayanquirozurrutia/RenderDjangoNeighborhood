@@ -2,6 +2,8 @@ from django.core.mail import send_mail
 import secrets
 from django.utils import timezone
 from .models import PasswordResetToken, ActivateAccountToken
+from pyproj import Proj, transform
+import utm
 
 from Neighborhood import settings
 
@@ -218,3 +220,21 @@ class Functions():
             card['content'] = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, molestiae doloribus. Esse quod perferendis mollitia accusamus, impedit expedita hic qui sit, animi eius laudantium totam aut sapiente provident. Omnis, officia'
         
         return cards, cards_carousel
+    
+    def zona_alertas(self, latitud, longitud):
+        utm_ = utm.from_latlon(float(latitud), float(longitud))
+        print(utm_)
+        
+        utmx_mas = utm_[0] + 300
+        utmx_menos = utm_[0] - 300
+        utmy_mas = utm_[1] + 300
+        utmy_menos = utm_[1] - 300
+        
+        punto_a = utm.to_latlon(utmx_mas, utm_[1], utm_[2], utm_[3])
+        punto_b = utm.to_latlon(utm_[0], utmy_mas, utm_[2], utm_[3])
+        punto_c = utm.to_latlon(utmx_menos, utm_[1], utm_[2], utm_[3])
+        punto_d = utm.to_latlon(utm_[0], utmy_menos, utm_[2], utm_[3])
+        
+        return punto_a, punto_b, punto_c, punto_d
+        
+        
